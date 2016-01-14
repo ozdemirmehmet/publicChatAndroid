@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <integer name="ga_sessionTimeout">300</integer>
+
+    <bool name="ga_autoActivityTracking">true</bool>
+
+    <screenName name="com.likapalab.mehmet.publicchat.MainActivity">MainActivity</screenName>
+
+    <screenName name="com.likapalab.mehmet.publicchat.PlaceActivity">PlaceActivity</screenName>
+
+    <screenName name="com.likapalab.mehmet.publicchat.MessageActivity">MessageActivity</screenName>
+
+    <string name="ga_trackingId">UA-70100605-4</string>
+
+</resources>

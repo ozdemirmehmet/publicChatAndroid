@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingRight="10dp"
+    android:paddingBottom="10dp"
+    android:paddingTop="3dp"
+    android:paddingLeft="10dp">
+
+
+    <LinearLayout android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:id="@+id/a"
+        android:gravity="center">
+
+        <com.google.android.gms.ads.AdView android:id="@+id/adView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            ads:adUnitId="ca-app-pub-6922992252721837/4241510500"
+            ads:adSize="BANNER"/>
+
+    </LinearLayout>
+
+    <ListView
+        android:stackFromBottom="true"
+        android:transcriptMode="normal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/messagesList"
+        android:divider="@null"
+        android:dividerHeight="1dp"
+        android:layout_above="@+id/linearLayout"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/a" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_toStartOf="@+id/linearLayout2"
+                android:layout_toLeftOf="@+id/linearLayout2">
+
+                    <EditText
+                        android:textColor="@color/black"
+                        android:layout_width="match_parent"
+                        android:padding="7dp"
+                        android:maxHeight="78dp"
+                        android:layout_margin="2dp"
+                        android:background="@drawable/background"
+                        android:hint="@string/text_here"
+                        android:textColorHint="@color/grey"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/messageText"
+                        android:layout_alignTop="@+id/sendButton"
+                        android:layout_toLeftOf="@+id/sendButton"
+                        android:layout_toStartOf="@+id/sendButton" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="7dp"
+                android:gravity="center"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:layout_alignParentRight="true"
+                android:id="@+id/linearLayout2">
+
+                <Button
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:gravity="center"
+                    android:enabled="false"
+                    android:background="@drawable/send_button_passive"
+                    android:id="@+id/sendButton"/>
+            </LinearLayout>
+
+        </RelativeLayout>
+    </LinearLayout>
+
+</RelativeLayout>

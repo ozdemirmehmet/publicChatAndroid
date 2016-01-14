@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="black">#000</color>
+    <color name="grey">#848484</color>
+    <color name="actionBarBackColor">#1b3b6f</color>
+    <color name="softGrey">#efefef</color>
+    <color name="gray">#b0b0b0</color>
+    <color name="red">#E1616A</color>
+    <color name="green2">#5EBA50</color>
+    <color name="white">#fff</color>
+
+</resources>

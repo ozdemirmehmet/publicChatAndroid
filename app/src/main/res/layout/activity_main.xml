@@ -1,0 +1,59 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity"
+    android:gravity="center"
+    android:id="@+id/relev">
+
+    <LinearLayout
+        android:padding="25dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/splash_layout_background"
+        android:id="@+id/linearLayout3">
+
+        <EditText
+            android:background="@drawable/background"
+            android:padding="10dp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/grey"
+            android:layout_gravity="bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/usernameText"
+            android:layout_centerVertical="true"
+            android:hint="@string/username_hint" />
+
+        <Button
+            android:enabled="false"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/splash_button_style"
+            android:id="@+id/connectButton"
+            android:text="@string/connect_button"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="20dp"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_below="@+id/linearLayout3"
+        android:layout_centerHorizontal="true">
+
+        <Button
+            android:id="@+id/refresh_app_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/refresh_app_button"
+            android:visibility="invisible"/>
+
+    </LinearLayout>
+
+</RelativeLayout>
