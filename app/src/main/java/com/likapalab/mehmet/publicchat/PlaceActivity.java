@@ -254,10 +254,10 @@ public class PlaceActivity extends Activity implements View.OnClickListener {
                 myLocationName = Place.getPlaces().get(position).getName();
 
                 MainActivity.mTracker.send(new HitBuilders.EventBuilder()
-                        .setCategory("Selection")
-                        .setAction("Place")
-                        .setLabel(myLocationName)
-                        .build()
+                                .setCategory("Selection")
+                                .setAction("Place")
+                                .setLabel(myLocationName)
+                                .build()
                 );
 
                 Intent i = new Intent(getApplicationContext(),MessageActivity.class);
@@ -265,7 +265,6 @@ public class PlaceActivity extends Activity implements View.OnClickListener {
                 i.putExtra("location",myLocationName);
                 startActivity(i);
                 PlaceActivity.this.finish();
-                overridePendingTransition(R.anim.anim_left_in, R.anim.anim_left_out);
             }
         });
     }
