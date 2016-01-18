@@ -265,6 +265,7 @@ public class PlaceActivity extends Activity implements View.OnClickListener {
                 i.putExtra("location",myLocationName);
                 startActivity(i);
                 PlaceActivity.this.finish();
+                overridePendingTransition(R.anim.anim_left_in, R.anim.anim_left_out);
             }
         });
     }

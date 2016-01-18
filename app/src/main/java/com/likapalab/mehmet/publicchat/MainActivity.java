@@ -168,6 +168,7 @@ public class MainActivity extends Activity {
         i.putExtra("username", username);
         startActivity(i);
         MainActivity.this.finish();
+        overridePendingTransition(R.anim.anim_left_in, R.anim.anim_left_out);
     }
 
     public void loadAd(){
