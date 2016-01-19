@@ -101,7 +101,7 @@ public class MessageActivity extends Activity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final AlertDialog.Builder builder = new AlertDialog.Builder(MessageActivity.this,AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
+                /*final AlertDialog.Builder builder = new AlertDialog.Builder(MessageActivity.this,AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
                 builder.setCancelable(false);
                 builder.setTitle(getResources().getString(R.string.attention));
                 builder.setMessage(getResources().getString(R.string.go_new_location_message));
@@ -113,6 +113,7 @@ public class MessageActivity extends Activity {
                         startActivity(i);
                         Message.clearMessageList();
                         MessageActivity.this.finish();
+                        overridePendingTransition(R.anim.anim_right_in,R.anim.anim_right_out);
                     }
                 });
                 builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
@@ -121,7 +122,13 @@ public class MessageActivity extends Activity {
 
                     }
                 });
-                builder.show();
+                builder.show();*/
+                Intent i = new Intent(getApplicationContext(), PlaceActivity.class);
+                i.putExtra("username", myUsername);
+                startActivity(i);
+                Message.clearMessageList();
+                MessageActivity.this.finish();
+                overridePendingTransition(R.anim.anim_right_in, R.anim.anim_right_out);
             }
         });
 
@@ -301,6 +308,7 @@ public class MessageActivity extends Activity {
                             startActivity(i);
                             Message.clearMessageList();
                             MessageActivity.this.finish();
+                            overridePendingTransition(R.anim.anim_right_in,R.anim.anim_right_out);
                         }
                     });
                     builder.show();
