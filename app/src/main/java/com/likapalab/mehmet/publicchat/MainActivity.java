@@ -51,16 +51,17 @@ public class MainActivity extends Activity {
         ActionBar actionBar = getActionBar();
         actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.actionBarBackColor)));
 
-        Locale locale = Locale.getDefault();
-        String displayLanguage = locale.getDisplayLanguage();
-        if(!displayLanguage.equals("Türkçe")){
+        //Locale locale = Locale.getDefault();
+        //String displayLanguage = this.getIntent().getStringExtra("language"); //locale.getDisplayLanguage();
+
+        /*if(!displayLanguage.equals("Türkçe")){
             Locale newLocale = new Locale("en");  //locale en yaptık. Artık değişkenler values-en paketinden alınacak
             Locale.setDefault(newLocale);
             Configuration config = new Configuration();
             config.locale = newLocale;
             getBaseContext().getResources().updateConfiguration(config,
                     getBaseContext().getResources().getDisplayMetrics());
-        }
+        }*/
 
         if(isNetworkConnected()) {
             interstitialAd = new InterstitialAd(this);
@@ -155,7 +156,7 @@ public class MainActivity extends Activity {
             refreshButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent i = new Intent(getApplicationContext(),MainActivity.class);
+                    Intent i = new Intent(getApplicationContext(),SplashScreen.class);
                     startActivity(i);
                     MainActivity.this.finish();
                 }
@@ -172,9 +173,9 @@ public class MainActivity extends Activity {
     }
 
     public void loadAd(){
-        AdRequest adRequest = new AdRequest.Builder().build();
-                //.addTestDevice("FBD77822C26796509677AAAE70BE0E99")
-
+        AdRequest adRequest = new AdRequest.Builder()//.build();
+                .addTestDevice("FBD77822C26796509677AAAE70BE0E99")
+.build();
         interstitialAd.loadAd(adRequest);
     }
 

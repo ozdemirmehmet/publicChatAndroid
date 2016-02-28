@@ -4,6 +4,8 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="place_world">Dünya</string>
+    //Splash Screen strings
+    <string name="google_service_error">Lütfen Google Play Service yükleyin!</string>
     //MainActivty strings
     <string name="no_internet_connection_error">Aktif bir internet bağlantısı bulunamadı. Lütfen bağlantı ayarlarınızı kontrol ediniz</string>
     <string name="long_username_error">Biraz azalt be hacı ne yaptın</string>

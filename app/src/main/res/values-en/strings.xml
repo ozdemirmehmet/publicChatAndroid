@@ -33,4 +33,5 @@
     <string name="place_world">World</string>
     <string name="exit">Exit</string>
     <string name="marshmallow_permission_message">You need to allow location to continue.</string>
+    <string name="google_service_error">Please install Google Play Service!</string>
 </resources>
