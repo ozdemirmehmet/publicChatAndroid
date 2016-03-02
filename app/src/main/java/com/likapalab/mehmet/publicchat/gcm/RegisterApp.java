@@ -25,14 +25,13 @@ public class RegisterApp extends AsyncTask<Void, Void, String> {
     Animation animation;
     HttpRequestClass httpRequestClass;
 
-    public RegisterApp(SplashScreen a, Animation animation, String language, Context ctx, GoogleCloudMessaging gcm, int appVersion) { //SplashScreen den gelen değerleri aldık
+    public RegisterApp(SplashScreen a, Animation animation, String language, String androidId, Context ctx, GoogleCloudMessaging gcm, int appVersion) { //SplashScreen den gelen değerleri aldık
         this.ctx = ctx;
         this.gcm = gcm;
         this.appVersion = appVersion;
         this.a = a;
         this.language = language;
-        this.androidId = Secure.getString(ctx.getContentResolver(),
-                Secure.ANDROID_ID);
+        this.androidId = androidId;
         this.animation = animation;
     }
 
@@ -81,8 +80,10 @@ public class RegisterApp extends AsyncTask<Void, Void, String> {
         String url = "http://publicchat.netne.net/register.php";/*"http://192.168.43.103:8080/Public%20Chat%20GCM/register.php";*/
         String parameters = "regId="+regid+"&androidId="+androidId+"&language="+language+"&appVersion="+appVersion;
 
-        String response = httpRequestClass.httpRequest(url, "POST", parameters, 4000);
-        response = response.substring(0,2);
+        String response = httpRequestClass.httpRequest(url, "POST", parameters, 2000);
+        if(response != null){
+            response = response.substring(0,2);
+        }
         if(response != null && response.equals("OK")){
             storeRegistrationId(ctx, regid);//Androidde regid saklı tutacak method
         }

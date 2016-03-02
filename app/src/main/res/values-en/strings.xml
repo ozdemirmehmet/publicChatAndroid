@@ -34,4 +34,8 @@
     <string name="exit">Exit</string>
     <string name="marshmallow_permission_message">You need to allow location to continue.</string>
     <string name="google_service_error">Please install Google Play Service!</string>
+    <string name="report_user">user was reported!</string>
+    <string name="more_reports_message">App was closed for you were get more complains!</string>
+    <string name="report_button_string">Report this user</string>
+    <string name="ban_message">Block your application use!</string>
 </resources>

@@ -3,19 +3,25 @@ package com.likapalab.mehmet.publicchat;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.FragmentManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Vibrator;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.TranslateAnimation;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -33,6 +39,7 @@ import org.json.JSONObject;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Random;
 
 
@@ -40,7 +47,9 @@ import com.google.android.gms.ads.*;
 /**
  * Created by Mehmet on 26.09.2015.
  */
-public class MessageActivity extends Activity {
+public class MessageActivity extends Activity implements com.likapalab.mehmet.publicchat.DialogInterface{
+
+    private final int REPORT_LIMIT = 5;
 
     AdView adView;
 
@@ -49,7 +58,7 @@ public class MessageActivity extends Activity {
     private ActionBar actionBar;
 
     int numberOfPerson = 0,myColor;
-    String myUsername,myLocationName;
+    String myUsername,myLocationName,myId;
     boolean isAnimation = false;
     ListView messagesListView;
     TextView numberTv,tv1;
@@ -57,8 +66,14 @@ public class MessageActivity extends Activity {
     Button sendButton,backButton;
     ToggleButton soundButton;
     MessageAdapter messageAdapter;
+    FragmentManager fragmentManager;
+    CustomDialogFragment customDialogFragment;
+    Vibrator vibrator;
+    Message reportMessage;
+    int reportCount = 0;
+    HttpRequestClass httpRequestClass;
 
-    private final String chatServer = "http://45.55.193.128";//"http://ec2-52-10-206-171.us-west-2.compute.amazonaws.com";
+    private final String chatServer = /*"http://192.168.43.103";//*/"http://45.55.193.128";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +88,9 @@ public class MessageActivity extends Activity {
         adView.loadAd(adRequest);
 
         mediaPlayer = MediaPlayer.create(this, R.raw.newmessage);
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+        httpRequestClass = new HttpRequestClass();
 
         actionBar = getActionBar();
         actionBar.setCustomView(R.layout.actionbar_view);
@@ -101,32 +119,11 @@ public class MessageActivity extends Activity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*final AlertDialog.Builder builder = new AlertDialog.Builder(MessageActivity.this,AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
-                builder.setCancelable(false);
-                builder.setTitle(getResources().getString(R.string.attention));
-                builder.setMessage(getResources().getString(R.string.go_new_location_message));
-                builder.setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent i = new Intent(getApplicationContext(), PlaceActivity.class);
-                        i.putExtra("username", myUsername);
-                        startActivity(i);
-                        Message.clearMessageList();
-                        MessageActivity.this.finish();
-                        overridePendingTransition(R.anim.anim_right_in,R.anim.anim_right_out);
-                    }
-                });
-                builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-                builder.show();*/
                 Intent i = new Intent(getApplicationContext(), PlaceActivity.class);
                 i.putExtra("username", myUsername);
                 startActivity(i);
                 Message.clearMessageList();
+                Message.clearUserList();
                 MessageActivity.this.finish();
                 overridePendingTransition(R.anim.anim_right_in, R.anim.anim_right_out);
             }
@@ -145,9 +142,30 @@ public class MessageActivity extends Activity {
         message = (EditText)findViewById(R.id.messageText);
         sendButton = (Button)findViewById(R.id.sendButton);
 
+        fragmentManager = getFragmentManager();
 
         messageAdapter = new MessageAdapter(getApplicationContext(),R.layout.messages_item_template,Message.getMessages());
         messagesListView.setAdapter(messageAdapter);
+
+        messagesListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Boolean isMe = Message.getMessages().get(position).getIsMe();
+                if(!isMe) {//Tıklanan mesaj kendi mesajım değilse
+                    vibrator.vibrate(20);
+                    reportMessage = Message.getMessages().get(position);
+                    if (!Message.isReport(reportMessage.getId())) {//Eğer şikayet edilecek kullanıcı önceden şikayet edilmemişse
+                        customDialogFragment = new CustomDialogFragment(reportMessage.getUsername(), reportMessage.getMessage(), reportMessage.getTime(), reportMessage.getUserColor(),false);
+                        customDialogFragment.show(fragmentManager, "CustomDialog");
+                    }
+                    else{//Kullanıcı önceden şikayet edilmiş reportUser butonu pasif olacak
+                        customDialogFragment = new CustomDialogFragment(reportMessage.getUsername(), reportMessage.getMessage(), reportMessage.getTime(), reportMessage.getUserColor(),true);
+                        customDialogFragment.show(fragmentManager, "CustomDialog");
+                    }
+                }
+                return false;
+            }
+        });
 
         //Socket Bağlantısı burada sağlandı
         try{
@@ -165,6 +183,7 @@ public class MessageActivity extends Activity {
         mSocket.on("new message",onNewMessage);
         mSocket.on("user left",onUserLeft);
         mSocket.on("user joined",onUserJoined);
+        mSocket.on("report user",onReportUser);
         //mSocket.on("");
 
         message.addTextChangedListener(new TextWatcher() {
@@ -213,7 +232,7 @@ public class MessageActivity extends Activity {
                 }
                 mSocket.emit("new message", obj);
                 message.setText("");
-                Message message_item = new Message(myUsername, message1, currentDateTime, myColor, true);
+                Message message_item = new Message(myId, myUsername, message1, currentDateTime, myColor, true);
                 Message.addList(message_item);
                 messageAdapter.notifyDataSetChanged();
             }
@@ -232,6 +251,7 @@ public class MessageActivity extends Activity {
         mSocket.off("new message", onNewMessage);
         mSocket.off("user left",onUserLeft);
         mSocket.off("user joined",onUserJoined);
+        mSocket.off("report user",onReportUser);
     }
 
     @Override
@@ -265,7 +285,6 @@ public class MessageActivity extends Activity {
         builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //tvAnimation(getResources().getString(R.string.no_exit_message),"",3000);
                 Action.clearActions();
                 Action action = new Action(getResources().getString(R.string.no_exit_message),"",3000);
                 Action.addAction(action);
@@ -281,11 +300,27 @@ public class MessageActivity extends Activity {
                 onDestroy();
                 MessageActivity.this.finish();
                 Message.clearMessageList();
+                Message.clearUserList();
             }
         });
         builder.show();
     }
 
+    @Override
+    public void buttonClick(int button) {
+        if(button == 1){
+            Message.addUser(reportMessage.getId());
+            Toast.makeText(getApplicationContext(), reportMessage.getUsername() + " " + R.string.report_user, Toast.LENGTH_LONG).show();
+
+            JSONObject obj = new JSONObject();
+            try {
+                obj.put("id", reportMessage.getId());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            mSocket.emit("report user", obj);
+        }
+    }
 
     private Emitter.Listener onConnectError = new Emitter.Listener(){
 
@@ -307,6 +342,7 @@ public class MessageActivity extends Activity {
                             i.putExtra("username", myUsername);
                             startActivity(i);
                             Message.clearMessageList();
+                            Message.clearUserList();
                             MessageActivity.this.finish();
                             overridePendingTransition(R.anim.anim_right_in,R.anim.anim_right_out);
                         }
@@ -343,6 +379,7 @@ public class MessageActivity extends Activity {
             JSONObject data = (JSONObject) args[0];
             try{
                 numberOfPerson = data.getInt("numberofPerson");
+                myId = data.getString("id");
             }catch (JSONException e){
                 e.printStackTrace();
             }
@@ -363,16 +400,18 @@ public class MessageActivity extends Activity {
             JSONObject data = (JSONObject) args[0];
             String message = "";
             String username = "";
-            int userColor;
+            String id = "";
+            int userColor = 0;
             try{
                 message = data.getString("message");
                 username = data.getString("username");
                 userColor = data.getInt("usercolor");
-                Message message_item = new Message(username,message,messageTime,userColor,false);
-                Message.addList(message_item);
+                id = data.getString("id");
             } catch (Exception e){
                 e.printStackTrace();
             }
+            Message message_item = new Message(id,username,message,messageTime,userColor,false);
+            Message.addList(message_item);
             mediaPlayer.start();
             //Ekranı yinele(Mesajları yinele)
             runOnUiThread(new Runnable() {
@@ -426,22 +465,40 @@ public class MessageActivity extends Activity {
         }
     };
 
-    /*private void tvAnimation(final String username, final String operation, final int duration){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+    private Emitter.Listener onReportUser = new Emitter.Listener(){
 
-                refreshTv(username, operation);
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshTv(myLocationName, "");
-                    }
-                }, duration);
+        @Override
+        public void call(Object... args) {
+            reportCount++;
+            if(reportCount == REPORT_LIMIT){
+                //Veritabanı bağlantısı kur ve cihazı yasaklı cihazlar listesine ekle
+                onDestroy();
+                new reportDatabase().execute();
             }
-        });
-    }*/
+        }
+    };
+
+    public class reportDatabase extends AsyncTask<Void,Void,Void>{
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+            String language = Locale.getDefault().getDisplayLanguage();
+            String url = "http://publicchat.netne.net/reportUser.php";//"http://192.168.43.103:8080/Public%20Chat%20GCM/reportUser.php";
+            String parameters = "androidId="+androidId+"&language="+language;
+            httpRequestClass.httpRequest(url, "POST", parameters,2000);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Toast.makeText(getApplicationContext(),R.string.more_reports_message,Toast.LENGTH_LONG).show();
+            MessageActivity.this.finish();
+            Message.clearMessageList();
+            Message.clearUserList();
+        }
+    }
 
     public void refreshTv(final String username, final String operation) {
 

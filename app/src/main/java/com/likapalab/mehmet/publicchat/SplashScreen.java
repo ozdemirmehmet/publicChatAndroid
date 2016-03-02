@@ -8,8 +8,10 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -32,8 +34,11 @@ public class SplashScreen extends Activity {
     public static final String PROPERTY_REG_ID = "registration_id";
     private static final String PROPERTY_APP_VERSION = "appVersion";
     GoogleCloudMessaging gcm;
-    String regid;
+    String regid, androidId;
     ImageView a;
+    HttpRequestClass httpRequestClass;
+    Animation logoMoveAnimation;
+    String displayLanguage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +49,7 @@ public class SplashScreen extends Activity {
         actionBar.hide();
 
         Locale locale = Locale.getDefault();
-        final String displayLanguage = locale.getDisplayLanguage();
+        displayLanguage = locale.getDisplayLanguage();
         if(!displayLanguage.equals("Türkçe")){
             Locale newLocale = new Locale("en");  //locale en yaptık. Artık değişkenler values-en paketinden alınacak
             Locale.setDefault(newLocale);
@@ -56,29 +61,12 @@ public class SplashScreen extends Activity {
 
         a = (ImageView)findViewById(R.id.imageView);
 
-        final Animation logoMoveAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.anim_scale);
+        logoMoveAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.anim_scale);
         a.startAnimation(logoMoveAnimation);
 
-        if (checkPlayServices()) {//GOOGLE PLAY SERVİCE APK YÜKLÜMÜ
-            gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
-            regid = getRegistrationId(getApplicationContext()); //registration_id olup olmadığını kontrol ediyoruz
+        androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-            if(regid.isEmpty()){//YENİ KAYIT
-                //regid değerimiz boş gelmişse uygulama ya ilk kez acılıyor yada güncellenmiş demektir.Registration işlemleri tekrardan yapılacak.
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        new RegisterApp(SplashScreen.this, logoMoveAnimation, displayLanguage, getApplicationContext(), gcm, getAppVersion(getApplicationContext())).execute(); //RegisterApp clasını çalıştırıyoruz ve değerleri gönderiyoruz
-                    }
-                }, 500);
-            }else {
-                //regid değerimiz boş gelmemişse önceden registration işlemleri tamamlanmış ve güncelleme olmamış demektir.Yani uygulama direk açılacak
-                Intent i = new Intent(getApplicationContext(), MainActivity.class);//Anasayfaya Yönlendir
-                startActivity(i);
-                SplashScreen.this.finish();
-            }
-        }
+        new control().execute();
     }
 
     @Override
@@ -86,6 +74,48 @@ public class SplashScreen extends Activity {
         super.setContentView(view);
     }
 
+    public class control extends AsyncTask<Void,Void,Void>{
+        String response;
+        @Override
+        protected Void doInBackground(Void... params) {
+            httpRequestClass = new HttpRequestClass();
+
+            String url = "http://publicchat.netne.net/isReport.php";//"http://192.168.43.103:8080/Public%20Chat%20GCM/isReport.php";
+            String parameters = "androidId="+androidId;
+
+            response = httpRequestClass.httpRequest(url,"POST",parameters,1300);
+            if(response != null){
+                response = response.substring(0,2);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            if(response != null && response.equals("NO")){//Burada cevap olarak kullanıcının banlı kullanıcılar arasında olduğu gelmiştir
+                Toast.makeText(getApplicationContext(),R.string.ban_message,Toast.LENGTH_LONG).show();
+                SplashScreen.this.finish();
+            }
+            else {//İnternet bağlantısı yok ise veya kullanıcı banlı kullanıcılar arasında değilse
+                if (checkPlayServices()) {//GOOGLE PLAY SERVİCE APK YÜKLÜMÜ
+                    gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
+                    regid = getRegistrationId(getApplicationContext()); //registration_id olup olmadığını kontrol ediyoruz
+
+                    if (regid.isEmpty()) {//YENİ KAYIT
+                        //regid değerimiz boş gelmişse uygulama ya ilk kez acılıyor yada güncellenmiş demektir.Registration işlemleri tekrardan yapılacak.
+                        new RegisterApp(SplashScreen.this, logoMoveAnimation, androidId, displayLanguage, getApplicationContext(), gcm, getAppVersion(getApplicationContext())).execute(); //RegisterApp clasını çalıştırıyoruz ve değerleri gönderiyoruz
+                    } else {
+                        //regid değerimiz boş gelmemişse önceden registration işlemleri tamamlanmış ve güncelleme olmamış demektir.Yani uygulama direk açılacak
+                        Intent i = new Intent(getApplicationContext(), MainActivity.class);//Anasayfaya Yönlendir
+                        startActivity(i);
+                        SplashScreen.this.finish();
+                    }
+                }
+            }
+        }
+    }
 
     private boolean checkPlayServices() {
         //Google Play Servis APK yüklümü
