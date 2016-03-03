@@ -105,7 +105,7 @@ public class SplashScreen extends Activity {
 
                     if (regid.isEmpty()) {//YENİ KAYIT
                         //regid değerimiz boş gelmişse uygulama ya ilk kez acılıyor yada güncellenmiş demektir.Registration işlemleri tekrardan yapılacak.
-                        new RegisterApp(SplashScreen.this, logoMoveAnimation, androidId, displayLanguage, getApplicationContext(), gcm, getAppVersion(getApplicationContext())).execute(); //RegisterApp clasını çalıştırıyoruz ve değerleri gönderiyoruz
+                        new RegisterApp(SplashScreen.this, logoMoveAnimation, displayLanguage, androidId, getApplicationContext(), gcm, getAppVersion(getApplicationContext())).execute(); //RegisterApp clasını çalıştırıyoruz ve değerleri gönderiyoruz
                     } else {
                         //regid değerimiz boş gelmemişse önceden registration işlemleri tamamlanmış ve güncelleme olmamış demektir.Yani uygulama direk açılacak
                         Intent i = new Intent(getApplicationContext(), MainActivity.class);//Anasayfaya Yönlendir
