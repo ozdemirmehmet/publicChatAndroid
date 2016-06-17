@@ -38,4 +38,5 @@
     <string name="more_reports_message">App was closed for you were get more complains!</string>
     <string name="report_button_string">Report this user</string>
     <string name="ban_message">Block your application use!</string>
+    <string name="location_not_found">Location not found. Please try again.</string>
 </resources>

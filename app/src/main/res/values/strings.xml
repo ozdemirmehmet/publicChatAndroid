@@ -40,6 +40,7 @@
     <string name="welcome">Hoşgeldin</string>
     <string name="marshmallow_permission_message">Devam edebilmek için konum izini vermen gerekiyor.</string>
     <string name="exit">Çık</string>
+    <string name="location_not_found">Konum bulunamadı. Lütfen tekrar deneyiniz.</string>
     //activty_place strings
     <string name="find_me">Yakındaki yerleri bulabilmem için ekrana tıkla.</string>
     //actionBar_view strings

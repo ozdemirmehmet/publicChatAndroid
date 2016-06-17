@@ -83,7 +83,7 @@ public class SplashScreen extends Activity {
             String url = "http://publicchat.netne.net/isReport.php";//"http://192.168.43.103:8080/Public%20Chat%20GCM/isReport.php";
             String parameters = "androidId="+androidId;
 
-            response = httpRequestClass.httpRequest(url,"POST",parameters,1300);
+            response = httpRequestClass.httpRequest(url,"POST",parameters,200);
             if(response != null){
                 response = response.substring(0,2);
             }

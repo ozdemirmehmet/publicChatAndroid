@@ -80,7 +80,7 @@ public class RegisterApp extends AsyncTask<Void, Void, String> {
         String url = "http://publicchat.netne.net/register.php";/*"http://192.168.43.103:8080/Public%20Chat%20GCM/register.php";*/
         String parameters = "regId="+regid+"&androidId="+androidId+"&language="+language+"&appVersion="+appVersion;
 
-        String response = httpRequestClass.httpRequest(url, "POST", parameters, 2000);
+        String response = httpRequestClass.httpRequest(url, "POST", parameters, 200);
         if(response != null){
             response = response.substring(0,2);
         }

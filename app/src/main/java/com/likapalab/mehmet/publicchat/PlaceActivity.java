@@ -7,16 +7,13 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -26,7 +23,8 @@ import android.widget.TextView;
 
 import com.google.android.gms.analytics.HitBuilders;
 
-import android.Manifest;
+import com.likapalab.mehmet.publicchat.MyLocation.LocationResult;
+import android.widget.Toast;
 
 
 /**
@@ -44,12 +42,16 @@ public class PlaceActivity extends Activity implements View.OnClickListener {
     private LocationManager locationManager;
     private Location myLocation;
     private ProgressDialog progressDialog;
-    String myUsername, myLocationName, provider;
+    String myUsername, myLocationName;//, provider;
+    private MyLocation myyLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_place);
+
+        myyLocation = new MyLocation(this, PlaceActivity.this);
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         myUsername = this.getIntent().getStringExtra("username");
 
@@ -82,16 +84,15 @@ public class PlaceActivity extends Activity implements View.OnClickListener {
         placeAdapter = new PlaceAdapter(getApplicationContext(), R.layout.places_item_template, Place.getPlaces());
         placeList.setAdapter(placeAdapter);
 
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        Criteria criteria = new Criteria();
+        /*Criteria criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_COARSE);
         criteria.setAltitudeRequired(false);
         criteria.setBearingRequired(false);
         criteria.setCostAllowed(true);
         criteria.setSpeedRequired(false);
         criteria.setPowerRequirement(Criteria.POWER_LOW);
-        provider = locationManager.getBestProvider(criteria, true);
+        provider = locationManager.getBestProvider(criteria, true);*/
 
         backbutton = (Button) actionBar.getCustomView().findViewById(R.id.back_button);
         refreshbutton = (Button) actionBar.getCustomView().findViewById(R.id.refresh_button);
@@ -114,12 +115,14 @@ public class PlaceActivity extends Activity implements View.OnClickListener {
 
                 if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                     startProgressDialog();
-                    if (ActivityCompat.checkSelfPermission(PlaceActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                    /*if (ActivityCompat.checkSelfPermission(PlaceActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                             ActivityCompat.checkSelfPermission(PlaceActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         marshmallowPermissionControl();
                         return;
                     }
-                    locationManager.requestLocationUpdates(provider, 0, 0, listener);
+                    locationManager.requestLocationUpdates(provider, 0, 0, listener);*/
+
+                    myyLocation.getLocation(locationResult, progressDialog);
                 } else {
                     goGpsDialog();
                 }
@@ -191,7 +194,13 @@ public class PlaceActivity extends Activity implements View.OnClickListener {
             listPlaces();
         } else {
 
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+
+            if(myLocation == null){
+                myyLocation.getLocation(locationResult,progressDialog);
+            } else {
+                new GetPlaces().execute();
+            }
+            /*if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                     ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 marshmallowPermissionControl();
                 return;
@@ -204,11 +213,37 @@ public class PlaceActivity extends Activity implements View.OnClickListener {
                 //get and list place
                 myLocation = location;
                 new GetPlaces().execute();
-            }
+            }*/
         }
     }
 
-    private LocationListener listener = new LocationListener() {
+    LocationResult locationResult = new LocationResult(){
+        @Override
+        public void gotLocation(Location location){
+            //Got the location!
+            if(location != null){
+                Log.d("AAA",location.toString());
+                myLocation = location;
+                if(progressDialog.isShowing()){
+                    Place.clearPlaceList();
+                }
+                currentLocation();
+            } else {
+                //Hata bas
+                if(progressDialog.isShowing()){
+                    progressDialog.dismiss();
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(PlaceActivity.this, getString(R.string.location_not_found), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }
+    };
+
+    /*private LocationListener listener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
             if (ActivityCompat.checkSelfPermission(PlaceActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -237,7 +272,7 @@ public class PlaceActivity extends Activity implements View.OnClickListener {
         public void onProviderDisabled(String provider) {
 
         }
-    };
+    };*/
 
     private void listPlaces(){
         if(progressDialog.isShowing()) {
@@ -289,7 +324,7 @@ public class PlaceActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    private void marshmallowPermissionControl(){
+    /*private void marshmallowPermissionControl(){
         new AlertDialog.Builder(PlaceActivity.this)
                 .setMessage(R.string.marshmallow_permission_message)
                 .setPositiveButton(R.string.okey, new DialogInterface.OnClickListener() {
@@ -308,6 +343,6 @@ public class PlaceActivity extends Activity implements View.OnClickListener {
                 .setCancelable(false)
                 .create()
                 .show();
-    }
+    }*/
 
 }

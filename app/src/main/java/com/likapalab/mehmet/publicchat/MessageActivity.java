@@ -310,7 +310,7 @@ public class MessageActivity extends Activity implements com.likapalab.mehmet.pu
     public void buttonClick(int button) {
         if(button == 1){
             Message.addUser(reportMessage.getId());
-            Toast.makeText(getApplicationContext(), reportMessage.getUsername() + " " + R.string.report_user, Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), reportMessage.getUsername() + " " + getString(R.string.report_user), Toast.LENGTH_LONG).show();
 
             JSONObject obj = new JSONObject();
             try {
