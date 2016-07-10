@@ -1,0 +1,53 @@
+<resources>
+    <string name="app_name">Public Chat</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="place_world">Dünya</string>
+    //Splash Screen strings
+    <string name="ban_message">Çok fazla şikayet aldığınız için uygulamayı kullanımınız kısa süreli olarak engellenmiştir.</string>
+    <string name="google_service_error">Lütfen Google Play Service yükleyin!</string>
+    //MainActivty strings
+    <string name="no_internet_connection_error">Aktif bir internet bağlantısı bulunamadı. Lütfen bağlantı ayarlarınızı kontrol ediniz</string>
+    <string name="long_username_error">Biraz azalt be hacı ne yaptın</string>
+    <string name="disable_gps_message">Yerini bulabilmem için GPS konum servisini açman gerekiyor. Seni oraya götüreyim mi?</string>
+    <string name="disable_gps_title">Bir dakika!</string>
+    <string name="disable_gps_button">Hadi Gidelim</string>
+    //activity_main strings
+    <string name="username_hint">Rumuz rica edeyim...</string>
+    <string name="connect_button">Bağlan</string>
+    //MessageActivty strings
+    <string name="report_user">kullanıcısı şikayet edildi!</string>
+    <string name="more_reports_message">Çok fazla şikayet aldığınız için uygulama kapatıldı!</string>
+    <string name="sound_closed">sessiz</string>
+    <string name="sound_opened">sesli</string>
+    <string name="attention">Dikkat!</string>
+    <string name="go_new_location_message">Başka bir yer mi seçmek istiyorsun?</string>
+    <string name="yes">Evet</string>
+    <string name="no">Hayır</string>
+    <string name="exit_title">Bi saniye ama</string>
+    <string name="exit_message">Bu kadar kolay olmamalı. Gerçekten gidiyor musun?</string>
+    <string name="no_exit_message">Beni sevdiğini biliyordum :)</string>
+    <string name="socket_error_title">Haydaaaaa!</string>
+    <string name="socket_error_message">Bağlantıyla ilgili bir problem oluştu. Tekrar bağlanmayı deneyeceğim.</string>
+    <string name="okey">Tamam</string>
+    <string name="joined">katıldı</string>
+    <string name="left">ayrıldı</string>
+    //DialogFrragment strings
+    <string name="report_button_string">Kullanıcıyı bildir</string>
+    //PlaceActivity strings
+    <string name="loading_places">Yükleniyor...</string>
+    <string name="welcome">Hoşgeldin</string>
+    <string name="marshmallow_permission_message">Devam edebilmek için konum izini vermen gerekiyor.</string>
+    <string name="exit">Çık</string>
+    <string name="location_not_found">Konum bulunamadı. Lütfen tekrar deneyiniz.</string>
+    //activty_place strings
+    <string name="find_me">Yakındaki yerleri bulabilmem için ekrana tıkla.</string>
+    //actionBar_view strings
+    <string name="active_user">Kaç Kişi Var?</string>
+    //activity_message strings
+    <string name="text_here">Buraya yaz...</string>
+    //place_actionbar_view strings
+    <string name="where_are_you">Sana yakın yerler</string>
+
+</resources>

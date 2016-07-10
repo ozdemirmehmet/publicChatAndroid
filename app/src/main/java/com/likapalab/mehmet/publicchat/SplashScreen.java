@@ -48,17 +48,6 @@ public class SplashScreen extends Activity {
         ActionBar actionBar = getActionBar();
         actionBar.hide();
 
-        Locale locale = Locale.getDefault();
-        displayLanguage = locale.getDisplayLanguage();
-        if(!displayLanguage.equals("Türkçe")){
-            Locale newLocale = new Locale("en");  //locale en yaptık. Artık değişkenler values-en paketinden alınacak
-            Locale.setDefault(newLocale);
-            Configuration config = new Configuration();
-            config.locale = newLocale;
-            getBaseContext().getResources().updateConfiguration(config,
-                    getBaseContext().getResources().getDisplayMetrics());
-        }
-
         a = (ImageView)findViewById(R.id.imageView);
 
         logoMoveAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.anim_scale);
